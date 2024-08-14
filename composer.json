@@ -1,0 +1,22 @@
+{
+    "name": "ajtormon/activecampaign-v3",
+    "description": "PHP wrapper for ActiveCampaign API V3",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "ActiveCampaignV3\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "AJ Tormon",
+            "email": "ajtormon.dev@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "php": "^7.2.5 || ^8.0",
+        "guzzlehttp/guzzle": "^7.9.2"
+    }
+}
