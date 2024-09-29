@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace ActiveCampaignV3;
 
+use ActiveCampaignV3\Libraries\Fields;
 use ActiveCampaignV3\Libraries\Contacts;
 use ActiveCampaignV3\Libraries\Tags;
+use ActiveCampaignV3\Libraries\Lists;
 
 class ActiveCampaign
 {
@@ -15,7 +17,7 @@ class ActiveCampaign
     private static $apiKey;
     private static $accountName;
 
-    private static $contacts, $tags;
+    private static $contacts, $tags, $fields, $lists; 
 
     public function __construct(string $accountName, string $apiKey)
     {
@@ -38,6 +40,15 @@ class ActiveCampaign
     public function tags(): Tags
     {
         return $this->__getLibrary('Tags');
+    }
+    public function fields(): Fields
+    {
+        return $this->__getLibrary('Fields');
+    }
+
+    public function lists(): Lists
+    {
+        return $this->__getLibrary('Lists');
     }
 
     private function __getLibrary(string $libraryName): object
