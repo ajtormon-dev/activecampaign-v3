@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace ActiveCampaignV3\Utils;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\Exception\ClientException;
-
 abstract class Api
 {
     const HEADERS = [
@@ -50,26 +47,58 @@ abstract class Api
 
     private function sendRequest(string $method, string $endpoint, array $options = [])
     {
-        try {
-            $client = self::__generateClient();
-            $result = $client->request($method, $endpoint, $options);
-            return self::__decodeResponse($result->getBody()->getContents());
-        } catch (ClientException $e) {
-            return self::__decodeResponse($e->getResponse()->getBody()->getContents());
+        $ch = curl_init();
+        $url = self::$apiUrl . $endpoint;
+
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Api-Token: ' . self::$apiKey,
+            'Accept: application/json',
+            'Content-Type: application/json'
+        ]);
+
+        switch ($method) {
+            case 'GET':
+                if (!empty($options['query'])) {
+                    $url .= '?' . http_build_query($options['query']);
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                }
+                break;
+            case 'POST':
+            case 'PUT':
+            case 'PATCH':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+                if (!empty($options['body'])) {
+                    curl_setopt($ch, CURLOPT_POSTFIELDS, $options['body']);
+                }
+                break;
+            case 'DELETE':
+                curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'DELETE');
+                if (!empty($options['query'])) {
+                    $url .= '?' . http_build_query($options['query']);
+                    curl_setopt($ch, CURLOPT_URL, $url);
+                }
+                break;
         }
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+        if (curl_errno($ch)) {
+            $error = curl_error($ch);
+            curl_close($ch);
+            throw new \Exception("cURL Error: $error");
+        }
+
+        curl_close($ch);
+
+        return self::__decodeResponse($response);
     }
 
     private static function __generateHeaders(): array
     {
         return array_merge(self::HEADERS, ['Api-Token' => self::$apiKey]);
-    }
-
-    private static function __generateClient(): Client
-    {
-        return new Client([
-            'base_uri' => self::$apiUrl,
-            'headers' => self::__generateHeaders()
-        ]);
     }
 
     private static function __decodeResponse(string $response): object

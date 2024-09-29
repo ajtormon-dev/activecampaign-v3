@@ -25,9 +25,11 @@ class Contacts extends Api
         return $this->_get('contacts', $filter);
     }
 
-    public function addTag(array $filter)
+    public function addTag(array $data)
     {
-        return $this->_post('contactTags', $filter);
+        $apiData = ["contactTag" => $data];
+
+        return $this->_post('contactTags', $apiData);
     }
 
     public function removeTag(array $filter)
