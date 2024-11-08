@@ -32,8 +32,13 @@ class Contacts extends Api
         return $this->_post('contactTags', $apiData);
     }
 
-    public function removeTag(array $filter)
+    public function removeTag(int $id)
     {
-        return $this->_delete('contactTags', $filter);
+        return $this->_delete('contactTags/' . $id);
+    }
+
+    public function contactTags(int $id): object
+    {
+        return $this->_get('contacts/' .$id . '/contactTags');
     }
 }
