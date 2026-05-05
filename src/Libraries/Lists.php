@@ -31,9 +31,9 @@ class Lists extends Api
         return $this->_post('contactLists', ['contactList' => $apiData]);
     }
 
-    public function all(): object
+    public function all(array $parameters = []): object
     {
-        return $this->_get('lists');
+        return $this->_get('lists', $parameters);
     }
 
     public function create(string $name, string $senderUrl, string $reminder = null)
